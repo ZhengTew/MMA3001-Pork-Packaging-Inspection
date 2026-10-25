@@ -1,0 +1,2 @@
+Model,Device,Images,Mean time (ms),Std time (ms),Throughput (FPS)
+Extended YOLO11n,CPU,114,35.07335789873379,14.102206738770265,28.51166982321079

@@ -1,0 +1,2 @@
+Model,Device,Images,Mean time (ms),Std time (ms),Throughput (FPS)
+Initial YOLO11n,CPU,114,33.114367544553,11.079734965925997,30.198372312397993
