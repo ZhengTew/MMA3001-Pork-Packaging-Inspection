@@ -1,5 +1,33 @@
 # Automated Pork Packaging Defect Detection
 
+## Documentation
+Detailed technical documentation is provided using MkDocs.
+
+The documentation includes:
+
+- Dataset exploration, cleaning and preparation.
+- HOG + SVM computational methodology.
+- YOLO11n training and optimisation.
+- Model evaluation and experimental results.
+- Reproducibility instructions and limitations.
+
+### View Documentation Locally
+Install dependencies:
+
+    python -m pip install -r requirements.txt
+
+Start the documentation server:
+
+    python -m mkdocs serve
+
+Open http://127.0.0.1:8000/ in your browser.
+
+### Online Documentation
+
+The HTML documentation is published through GitHub Pages.
+
+[View Technical Documentation](http://127.0.0.1:8000/)
+
 ## 1. Project Overview
 
 This project develops and evaluates a computer vision system for detecting packaging defects and visual presentation errors in pork rasher products.
@@ -139,8 +167,15 @@ MMA3001-Pork-Packaging-Inspection/
 │   └── 04_yolo_model.ipynb
 ├── src/
 ├── docs/
+│   ├── index.md
+│   ├── dataset.md
+│   ├── methodology.md
+│   ├── model_training.md
+│   ├── evaluation.md
+│   └── reproducibility.md
 ├── results/
 │   └── figures/
+├── mkdocs.yml
 ├── requirements.txt
 ├── README.md
 └── .gitignore
