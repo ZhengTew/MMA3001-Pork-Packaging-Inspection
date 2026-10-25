@@ -1,0 +1,16 @@
+site_name: Automated Pork Packaging Inspection
+site_description: MMA3001 Computer Vision Project
+
+theme:
+  name: readthedocs
+
+nav:
+  - Home: index.md
+  - Dataset Preparation: dataset.md
+  - Computational Methods: methodology.md
+  - Model Training: model_training.md
+  - Evaluation and Results: evaluation.md
+  - Reproducibility: reproducibility.md
+
+docs_dir: docs
+site_dir: site
