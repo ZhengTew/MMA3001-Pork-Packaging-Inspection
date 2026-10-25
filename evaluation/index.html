@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Evaluation and Results - Automated Pork Packaging Inspection</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Evaluation and Results";
+        var mkdocs_page_input_path = "evaluation.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Automated Pork Packaging Inspection
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../dataset/">Dataset Preparation</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../methodology/">Computational Methods</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../model_training/">Model Training</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Evaluation and Results</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#1-overview">1. Overview</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#2-evaluation-dataset">2. Evaluation Dataset</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#3-evaluation-metrics">3. Evaluation Metrics</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#31-true-and-false-detections">3.1 True and False Detections</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#32-precision">3.2 Precision</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#33-recall">3.3 Recall</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#34-f1-score">3.4 F1-score</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#35-mean-average-precision">3.5 Mean Average Precision</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#4-hog-svm-baseline-results">4. HOG + SVM Baseline Results</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#41-full-image-detection-results">4.1 Full-Image Detection Results</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#42-interpretation">4.2 Interpretation</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#5-yolo-validation-results">5. YOLO Validation Results</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#51-initial-and-extended-models">5.1 Initial and Extended Models</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#52-improvements-after-extended-training">5.2 Improvements After Extended Training</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#6-hog-svm-versus-yolo">6. HOG + SVM Versus YOLO</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#7-final-yolo-test-results">7. Final YOLO Test Results</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#71-interpretation">7.1 Interpretation</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#72-generalisation-gap">7.2 Generalisation Gap</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#8-computational-performance">8. Computational Performance</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#81-inference-benchmarking">8.1 Inference Benchmarking</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#82-repeated-benchmarking">8.2 Repeated Benchmarking</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#83-interpretation">8.3 Interpretation</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#9-qualitative-evaluation">9. Qualitative Evaluation</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#10-limitations">10. Limitations</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#101-dataset-imbalance">10.1 Dataset Imbalance</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#102-detection-thresholds">10.2 Detection Thresholds</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#103-class-agnostic-comparison">10.3 Class-Agnostic Comparison</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#104-hardware-differences">10.4 Hardware Differences</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#105-limited-test-coverage">10.5 Limited Test Coverage</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#11-overall-findings">11. Overall Findings</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#12-supporting-implementation">12. Supporting Implementation</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../reproducibility/">Reproducibility</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Automated Pork Packaging Inspection</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Evaluation and Results</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="evaluation-and-results">Evaluation and Results</h1>
+<h2 id="1-overview">1. Overview</h2>
+<p>This project evaluates two approaches to automated
+pork packaging defect detection:</p>
+<ol>
+<li>HOG + SVM sliding-window detection.</li>
+<li>YOLO11n deep-learning object detection.</li>
+</ol>
+<p>Evaluation considers detection accuracy, computational
+performance and generalisation to unseen images.</p>
+<p>The experiments include:</p>
+<ul>
+<li>HOG + SVM baseline evaluation.</li>
+<li>Initial and extended YOLO validation.</li>
+<li>Comparison of detection performance.</li>
+<li>Inference time and GPU memory benchmarking.</li>
+<li>Final evaluation on the held-out test dataset.</li>
+</ul>
+<h2 id="2-evaluation-dataset">2. Evaluation Dataset</h2>
+<p>The processed dataset contains the following splits:</p>
+<table>
+<thead>
+<tr>
+<th>Split</th>
+<th style="text-align: right;">Images</th>
+<th style="text-align: right;">Annotations</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Training</td>
+<td style="text-align: right;">1,741</td>
+<td style="text-align: right;">2,201</td>
+</tr>
+<tr>
+<td>Validation</td>
+<td style="text-align: right;">114</td>
+<td style="text-align: right;">144</td>
+</tr>
+<tr>
+<td>Testing</td>
+<td style="text-align: right;">76</td>
+<td style="text-align: right;">93</td>
+</tr>
+</tbody>
+</table>
+<p>The validation dataset was used for model development
+and performance comparison.</p>
+<p>The test dataset was reserved for the final assessment
+of the selected YOLO model.</p>
+<h2 id="3-evaluation-metrics">3. Evaluation Metrics</h2>
+<h3 id="31-true-and-false-detections">3.1 True and False Detections</h3>
+<p>Detections were evaluated by matching predicted
+bounding boxes to ground-truth annotations.</p>
+<p>For the custom model comparison, an IoU threshold
+of 0.50 was used.</p>
+<p>Each ground-truth box could be matched to only
+one prediction.</p>
+<p>The resulting counts were:</p>
+<ul>
+<li>True Positive (TP): Correctly localised defect.</li>
+<li>False Positive (FP): Unmatched predicted defect.</li>
+<li>False Negative (FN): Missed annotated defect.</li>
+</ul>
+<h3 id="32-precision">3.2 Precision</h3>
+<p>Precision measures the proportion of predictions
+that correspond to ground-truth objects.</p>
+<p>Precision = TP / (TP + FP)</p>
+<h3 id="33-recall">3.3 Recall</h3>
+<p>Recall measures the proportion of ground-truth
+objects successfully detected.</p>
+<p>Recall = TP / (TP + FN)</p>
+<h3 id="34-f1-score">3.4 F1-score</h3>
+<p>The F1-score combines precision and recall.</p>
+<p>F1 = 2 × Precision × Recall / (Precision + Recall)</p>
+<h3 id="35-mean-average-precision">3.5 Mean Average Precision</h3>
+<p>YOLO performance was also evaluated using:</p>
+<ul>
+<li>mAP@0.5: Mean average precision at IoU 0.50.</li>
+<li>mAP@0.5:0.95: Mean average precision averaged
+  across IoU thresholds from 0.50 to 0.95.</li>
+</ul>
+<p>These metrics assess object detection across
+confidence thresholds and, for mAP@0.5:0.95,
+multiple localisation requirements.</p>
+<h2 id="4-hog-svm-baseline-results">4. HOG + SVM Baseline Results</h2>
+<p>The traditional baseline used HOG features
+with a linear Support Vector Machine.</p>
+<p>Defects were detected using multiscale
+sliding windows and non-maximum suppression.</p>
+<h3 id="41-full-image-detection-results">4.1 Full-Image Detection Results</h3>
+<p>The baseline was evaluated on 114 validation
+images containing 144 annotated defects.</p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th style="text-align: right;">Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>True Positives</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td>False Positives</td>
+<td style="text-align: right;">832</td>
+</tr>
+<tr>
+<td>False Negatives</td>
+<td style="text-align: right;">143</td>
+</tr>
+<tr>
+<td>Precision</td>
+<td style="text-align: right;">0.12%</td>
+</tr>
+<tr>
+<td>Recall</td>
+<td style="text-align: right;">0.69%</td>
+</tr>
+<tr>
+<td>F1-score</td>
+<td style="text-align: right;">0.20%</td>
+</tr>
+<tr>
+<td>Mean processing time</td>
+<td style="text-align: right;">4,362.98 ms/image</td>
+</tr>
+</tbody>
+</table>
+<h3 id="42-interpretation">4.2 Interpretation</h3>
+<p>The baseline achieved very limited
+full-image detection performance.</p>
+<p>Only one annotated defect was successfully
+matched at IoU 0.50.</p>
+<p>The large number of false positives indicates
+that many background regions were incorrectly
+identified as defects.</p>
+<p>The low recall shows that most annotated
+defects were not detected.</p>
+<p>Although the SVM achieved approximately 85%
+classification accuracy during cropped-region
+evaluation, this did not translate into
+effective full-image object detection.</p>
+<p>This distinction illustrates the additional
+difficulty of defect localisation compared
+with classifying predefined image regions.</p>
+<h2 id="5-yolo-validation-results">5. YOLO Validation Results</h2>
+<h3 id="51-initial-and-extended-models">5.1 Initial and Extended Models</h3>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th style="text-align: right;">Initial YOLO</th>
+<th style="text-align: right;">Extended YOLO</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Precision</td>
+<td style="text-align: right;">64.63%</td>
+<td style="text-align: right;">84.40%</td>
+</tr>
+<tr>
+<td>Recall</td>
+<td style="text-align: right;">55.59%</td>
+<td style="text-align: right;">59.74%</td>
+</tr>
+<tr>
+<td>mAP@0.5</td>
+<td style="text-align: right;">60.29%</td>
+<td style="text-align: right;">72.13%</td>
+</tr>
+<tr>
+<td>mAP@0.5:0.95</td>
+<td style="text-align: right;">29.14%</td>
+<td style="text-align: right;">34.00%</td>
+</tr>
+</tbody>
+</table>
+<h3 id="52-improvements-after-extended-training">5.2 Improvements After Extended Training</h3>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th style="text-align: right;">Improvement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Precision</td>
+<td style="text-align: right;">+19.77 percentage points</td>
+</tr>
+<tr>
+<td>Recall</td>
+<td style="text-align: right;">+4.15 percentage points</td>
+</tr>
+<tr>
+<td>mAP@0.5</td>
+<td style="text-align: right;">+11.84 percentage points</td>
+</tr>
+<tr>
+<td>mAP@0.5:0.95</td>
+<td style="text-align: right;">+4.86 percentage points</td>
+</tr>
+</tbody>
+</table>
+<p>Extended training improved all four
+reported validation metrics.</p>
+<p>The largest increase was observed in precision.</p>
+<p>The increase in mAP@0.5 indicates improved
+overall detection performance.</p>
+<p>However, mAP@0.5:0.95 remained relatively low,
+suggesting that accurate bounding-box
+localisation continued to be challenging.</p>
+<h2 id="6-hog-svm-versus-yolo">6. HOG + SVM Versus YOLO</h2>
+<p>A custom evaluation procedure was developed
+to compare both approaches using identical
+validation images.</p>
+<p>The comparison used:</p>
+<ul>
+<li>One-to-one bounding-box matching.</li>
+<li>An IoU threshold of 0.50.</li>
+<li>Model-specific detection thresholds.</li>
+<li>Class-agnostic matching.</li>
+</ul>
+<p>The HOG + SVM baseline produced very low
+precision and recall during full-image
+detection.</p>
+<p>In contrast, YOLO achieved substantially
+stronger validation detection performance.</p>
+<p>However, the reported Ultralytics validation
+metrics and custom matching metrics are
+calculated differently.</p>
+<p>Therefore, results from these separate
+evaluation procedures should not be treated
+as directly interchangeable.</p>
+<p>The custom comparison implemented in
+<code>04_yolo_model.ipynb</code> provides the
+more consistent basis for direct comparison
+at fixed detection thresholds.</p>
+<h2 id="7-final-yolo-test-results">7. Final YOLO Test Results</h2>
+<p>The extended YOLO model was evaluated on
+the held-out test dataset.</p>
+<p>The dataset contained 76 images and
+93 annotated defects.</p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th style="text-align: right;">Test Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Precision</td>
+<td style="text-align: right;">47.44%</td>
+</tr>
+<tr>
+<td>Recall</td>
+<td style="text-align: right;">51.64%</td>
+</tr>
+<tr>
+<td>mAP@0.5</td>
+<td style="text-align: right;">55.80%</td>
+</tr>
+<tr>
+<td>mAP@0.5:0.95</td>
+<td style="text-align: right;">25.50%</td>
+</tr>
+</tbody>
+</table>
+<h3 id="71-interpretation">7.1 Interpretation</h3>
+<p>The extended model successfully detected
+some defects in previously unseen images.</p>
+<p>However, test performance was lower than
+the reported validation performance.</p>
+<p>This indicates that the validation results
+did not fully represent model performance
+on the held-out test dataset.</p>
+<p>Possible contributing factors include:</p>
+<ul>
+<li>Limited dataset size.</li>
+<li>Unequal class representation.</li>
+<li>Differences in image conditions.</li>
+<li>Similarity among training images.</li>
+<li>Difficulty distinguishing subtle defects.</li>
+</ul>
+<p>These explanations are plausible limitations
+rather than individually verified causes
+of the performance reduction.</p>
+<h3 id="72-generalisation-gap">7.2 Generalisation Gap</h3>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th style="text-align: right;">Validation</th>
+<th style="text-align: right;">Test</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Precision</td>
+<td style="text-align: right;">84.40%</td>
+<td style="text-align: right;">47.44%</td>
+</tr>
+<tr>
+<td>Recall</td>
+<td style="text-align: right;">59.74%</td>
+<td style="text-align: right;">51.64%</td>
+</tr>
+<tr>
+<td>mAP@0.5</td>
+<td style="text-align: right;">72.13%</td>
+<td style="text-align: right;">55.80%</td>
+</tr>
+<tr>
+<td>mAP@0.5:0.95</td>
+<td style="text-align: right;">34.00%</td>
+<td style="text-align: right;">25.50%</td>
+</tr>
+</tbody>
+</table>
+<p>The decrease in test performance demonstrates
+the importance of evaluating detection models
+on held-out data.</p>
+<p>The available results are insufficient to
+establish reliable performance under different
+industrial operating conditions.</p>
+<h2 id="8-computational-performance">8. Computational Performance</h2>
+<h3 id="81-inference-benchmarking">8.1 Inference Benchmarking</h3>
+<p>The initial and extended YOLO models were
+benchmarked using identical test images.</p>
+<p>The benchmarking procedure measured:</p>
+<ul>
+<li>Mean time per image.</li>
+<li>Standard deviation of processing time.</li>
+<li>Throughput in frames per second.</li>
+<li>Peak allocated GPU memory.</li>
+</ul>
+<p>Both models used:</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Image resolution</td>
+<td>640</td>
+</tr>
+<tr>
+<td>Confidence threshold</td>
+<td>0.30</td>
+</tr>
+<tr>
+<td>Batch size</td>
+<td>4</td>
+</tr>
+<tr>
+<td>GPU device</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<p>GPU synchronisation was used to improve
+timing accuracy.</p>
+<h3 id="82-repeated-benchmarking">8.2 Repeated Benchmarking</h3>
+<p>Additional benchmarking was conducted over
+three rounds.</p>
+<p>Model evaluation order was alternated
+between rounds to reduce ordering effects.</p>
+<p>Each round used two internal timing
+repetitions per model.</p>
+<p>The recorded results were exported to:</p>
+<p><code>results/yolo_runtime_repeated.csv</code></p>
+<p>Average runtime and throughput were
+calculated to examine performance consistency.</p>
+<h3 id="83-interpretation">8.3 Interpretation</h3>
+<p>The lightweight YOLO11n architecture
+supports efficient GPU-based inference.</p>
+<p>However, computational comparisons must
+account for hardware differences.</p>
+<p>The traditional baseline was evaluated
+on the CPU, whereas YOLO was evaluated
+on an NVIDIA GPU.</p>
+<p>Consequently, the timing results describe
+the implemented systems rather than a
+controlled comparison on identical hardware.</p>
+<p>Measured processing time also includes
+model preprocessing and postprocessing.</p>
+<h2 id="9-qualitative-evaluation">9. Qualitative Evaluation</h2>
+<p>Ground-truth annotations were visually
+compared with model predictions.</p>
+<p>The qualitative analysis considered:</p>
+<ul>
+<li>Correctly detected defects.</li>
+<li>Missed annotated defects.</li>
+<li>False-positive detections.</li>
+<li>Bounding-box localisation quality.</li>
+<li>Differences across defect categories.</li>
+</ul>
+<p>These comparisons help identify failure
+modes that may not be obvious from
+aggregate numerical metrics.</p>
+<h2 id="10-limitations">10. Limitations</h2>
+<h3 id="101-dataset-imbalance">10.1 Dataset Imbalance</h3>
+<p>The five defect categories are not
+equally represented.</p>
+<p>The wrinkle category has no annotated
+examples in the validation or test sets.</p>
+<p>Its detection performance therefore
+cannot be assessed reliably using
+these evaluation splits.</p>
+<h3 id="102-detection-thresholds">10.2 Detection Thresholds</h3>
+<p>Precision and recall depend on the
+confidence or decision threshold.</p>
+<p>A threshold suitable for one
+application may not be appropriate
+for another.</p>
+<h3 id="103-class-agnostic-comparison">10.3 Class-Agnostic Comparison</h3>
+<p>The custom HOG + SVM versus YOLO
+comparison evaluates bounding-box
+localisation without requiring
+correct class identification.</p>
+<p>It does not measure multiclass
+classification performance.</p>
+<h3 id="104-hardware-differences">10.4 Hardware Differences</h3>
+<p>CPU and GPU runtime measurements
+should not be interpreted as
+equal-hardware performance.</p>
+<h3 id="105-limited-test-coverage">10.5 Limited Test Coverage</h3>
+<p>The held-out test dataset contains
+76 images.</p>
+<p>A larger and more diverse test
+dataset would provide stronger
+evidence of generalisation.</p>
+<h2 id="11-overall-findings">11. Overall Findings</h2>
+<p>The experiments show that:</p>
+<ol>
+<li>
+<p>HOG + SVM performed poorly when
+   applied to full-image defect detection.</p>
+</li>
+<li>
+<p>YOLO11n achieved substantially
+   better detection performance during
+   validation.</p>
+</li>
+<li>
+<p>Extended training improved the
+   reported YOLO validation metrics.</p>
+</li>
+<li>
+<p>Performance decreased on the
+   held-out test dataset.</p>
+</li>
+<li>
+<p>Additional data and model refinement
+   are necessary before considering
+   real-world deployment.</p>
+</li>
+</ol>
+<p>The results demonstrate the potential
+of deep-learning object detection for
+packaging inspection while identifying
+important limitations in robustness
+and generalisation.</p>
+<h2 id="12-supporting-implementation">12. Supporting Implementation</h2>
+<p>Evaluation procedures and figures
+are implemented in:</p>
+<ul>
+<li><code>notebooks/03_baseline_model.ipynb</code></li>
+<li><code>notebooks/04_yolo_model.ipynb</code></li>
+</ul>
+<p>Additional runtime measurements
+are stored in the <code>results/</code> directory.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../model_training/" class="btn btn-neutral float-left" title="Model Training"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../reproducibility/" class="btn btn-neutral float-right" title="Reproducibility">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../model_training/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../reproducibility/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

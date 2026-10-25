@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Dataset Preparation - Automated Pork Packaging Inspection</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Dataset Preparation";
+        var mkdocs_page_input_path = "dataset.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Automated Pork Packaging Inspection
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Dataset Preparation</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#1-dataset-overview">1. Dataset Overview</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#2-original-dataset">2. Original Dataset</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#3-dataset-quality-checks">3. Dataset Quality Checks</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#4-duplicate-handling">4. Duplicate Handling</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#5-processed-dataset">5. Processed Dataset</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#6-coco-to-yolo-conversion">6. COCO-to-YOLO Conversion</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#7-dataset-limitations">7. Dataset Limitations</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#class-imbalance">Class Imbalance</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#wrinkle-category">Wrinkle Category</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#video-frame-similarity">Video-Frame Similarity</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#annotation-quality">Annotation Quality</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#8-reproducibility">8. Reproducibility</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../methodology/">Computational Methods</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../model_training/">Model Training</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../evaluation/">Evaluation and Results</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../reproducibility/">Reproducibility</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Automated Pork Packaging Inspection</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Dataset Preparation</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="dataset-preparation">Dataset Preparation</h1>
+<h2 id="1-dataset-overview">1. Dataset Overview</h2>
+<p>The project uses RGB images of pork rasher products with
+bounding-box annotations for packaging and visual meat
+presentation defects.</p>
+<p>The original dataset was exported in COCO JSON format and
+contains five annotated defect categories:</p>
+<table>
+<thead>
+<tr>
+<th>COCO ID</th>
+<th>Defect Category</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Loose meat</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Packaging error</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Twisted meat</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Unsealed</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Wrinkle</td>
+</tr>
+</tbody>
+</table>
+<p>COCO category ID 0 is an unused placeholder and is excluded
+from the YOLO class mapping.</p>
+<h2 id="2-original-dataset">2. Original Dataset</h2>
+<p>The original dataset contains 1,955 images and 2,466
+bounding-box annotations.</p>
+<table>
+<thead>
+<tr>
+<th>Dataset</th>
+<th style="text-align: right;">Images</th>
+<th style="text-align: right;">Annotations</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Training</td>
+<td style="text-align: right;">1,764</td>
+<td style="text-align: right;">2,232</td>
+</tr>
+<tr>
+<td>Validation</td>
+<td style="text-align: right;">115</td>
+<td style="text-align: right;">143</td>
+</tr>
+<tr>
+<td>Testing</td>
+<td style="text-align: right;">76</td>
+<td style="text-align: right;">91</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td style="text-align: right;"><strong>1,955</strong></td>
+<td style="text-align: right;"><strong>2,466</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Images and annotations were inspected using Python, OpenCV,
+pandas and Matplotlib.</p>
+<h2 id="3-dataset-quality-checks">3. Dataset Quality Checks</h2>
+<p>The dataset exploration included:</p>
+<ul>
+<li>Counting images and annotations in each split.</li>
+<li>Examining class distributions.</li>
+<li>Displaying images with ground-truth bounding boxes.</li>
+<li>Checking for invalid annotation geometry.</li>
+<li>Identifying duplicated original filenames across splits.</li>
+</ul>
+<p>No invalid bounding boxes were identified by the implemented
+geometry checks.</p>
+<p>However, original-image filename overlaps were identified
+between training, validation and testing datasets.</p>
+<p>Such overlaps can cause data leakage and produce overly
+optimistic evaluation results.</p>
+<h2 id="4-duplicate-handling">4. Duplicate Handling</h2>
+<p>Images were grouped by their original source filename.</p>
+<p>Each original-image group was assigned to only one dataset
+split using the following priority:</p>
+<ol>
+<li>Test</li>
+<li>Validation</li>
+<li>Training</li>
+</ol>
+<p>This approach prevents copies with the same original filename
+from appearing across different splits.</p>
+<p>For validation and testing, one exported copy per original
+image was retained. Training copies were preserved.</p>
+<p>The resulting dataset was saved separately under
+<code>data/processed/</code> to avoid modifying the original files.</p>
+<h2 id="5-processed-dataset">5. Processed Dataset</h2>
+<table>
+<thead>
+<tr>
+<th>Dataset</th>
+<th style="text-align: right;">Images</th>
+<th style="text-align: right;">Annotations</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Training</td>
+<td style="text-align: right;">1,741</td>
+<td style="text-align: right;">2,201</td>
+</tr>
+<tr>
+<td>Validation</td>
+<td style="text-align: right;">114</td>
+<td style="text-align: right;">144</td>
+</tr>
+<tr>
+<td>Testing</td>
+<td style="text-align: right;">76</td>
+<td style="text-align: right;">93</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td style="text-align: right;"><strong>1,931</strong></td>
+<td style="text-align: right;"><strong>2,438</strong></td>
+</tr>
+</tbody>
+</table>
+<p>The processed dataset was verified by checking:</p>
+<ul>
+<li>Existence of all referenced image files.</li>
+<li>Valid image and category references.</li>
+<li>Positive bounding-box dimensions.</li>
+<li>Bounding boxes within image boundaries.</li>
+<li>No cross-split original-filename overlaps.</li>
+</ul>
+<p>All implemented validation checks passed.</p>
+<h2 id="6-coco-to-yolo-conversion">6. COCO-to-YOLO Conversion</h2>
+<p>The processed COCO annotations were converted to YOLO
+format for object-detection training.</p>
+<p>COCO bounding boxes use:</p>
+<p><code>[x_min, y_min, width, height]</code></p>
+<p>YOLO labels use:</p>
+<p><code>[class_id, x_center, y_center, width, height]</code></p>
+<p>The YOLO box coordinates are normalised by the corresponding
+image width and height.</p>
+<p>The five classes were mapped to consecutive YOLO IDs:</p>
+<table>
+<thead>
+<tr>
+<th>YOLO ID</th>
+<th>Defect Category</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>Loose meat</td>
+</tr>
+<tr>
+<td>1</td>
+<td>Packaging error</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Twisted meat</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Unsealed</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Wrinkle</td>
+</tr>
+</tbody>
+</table>
+<p>Each image has a corresponding text label file. Images without
+annotations have empty label files.</p>
+<p>The converted dataset is stored under <code>data/yolo/</code>.</p>
+<h2 id="7-dataset-limitations">7. Dataset Limitations</h2>
+<h3 id="class-imbalance">Class Imbalance</h3>
+<p>The dataset contains unequal numbers of examples across
+defect categories.</p>
+<p>This may reduce detection performance for less-represented
+classes.</p>
+<h3 id="wrinkle-category">Wrinkle Category</h3>
+<p>The processed training set contains wrinkle annotations,
+but the validation and test datasets contain none.</p>
+<p>Therefore, the model's ability to detect wrinkle defects
+cannot be reliably assessed using the available evaluation
+datasets.</p>
+<h3 id="video-frame-similarity">Video-Frame Similarity</h3>
+<p>Some images originate from nearby video frames.</p>
+<p>Although original-filename overlaps were removed, visually
+similar frames may still occur across dataset splits.</p>
+<p>Consequently, filename-based separation does not guarantee
+complete statistical independence.</p>
+<h3 id="annotation-quality">Annotation Quality</h3>
+<p>Geometric validation cannot establish whether the defect
+categories or bounding-box locations are visually correct.</p>
+<p>Further manual annotation review would improve confidence
+in the dataset.</p>
+<h2 id="8-reproducibility">8. Reproducibility</h2>
+<p>Dataset exploration and preparation are implemented in:</p>
+<ul>
+<li><code>notebooks/01_dataset_exploration.ipynb</code></li>
+<li><code>notebooks/02_dataset_preparation.ipynb</code></li>
+</ul>
+<p>COCO-to-YOLO conversion is implemented in:</p>
+<ul>
+<li><code>notebooks/04_yolo_model.ipynb</code></li>
+</ul>
+<p>The original and processed image datasets are excluded from
+Git version control.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href=".." class="btn btn-neutral float-left" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../methodology/" class="btn btn-neutral float-right" title="Computational Methods">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href=".." style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../methodology/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

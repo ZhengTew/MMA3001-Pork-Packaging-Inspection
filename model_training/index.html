@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Model Training - Automated Pork Packaging Inspection</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Model Training";
+        var mkdocs_page_input_path = "model_training.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Automated Pork Packaging Inspection
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../dataset/">Dataset Preparation</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../methodology/">Computational Methods</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Model Training</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#1-overview">1. Overview</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#2-training-environment">2. Training Environment</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#3-training-dataset">3. Training Dataset</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#4-initial-yolo-training">4. Initial YOLO Training</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#41-model-initialisation">4.1 Model Initialisation</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#42-training-configuration">4.2 Training Configuration</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#43-initial-validation-results">4.3 Initial Validation Results</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#5-extended-yolo-training">5. Extended YOLO Training</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#51-training-approach">5.1 Training Approach</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#52-extended-training-configuration">5.2 Extended Training Configuration</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#6-validation-performance-comparison">6. Validation Performance Comparison</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#7-confidence-threshold-sensitivity">7. Confidence-Threshold Sensitivity</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#71-interpretation">7.1 Interpretation</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#72-selected-operating-threshold">7.2 Selected Operating Threshold</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#73-evaluation-considerations">7.3 Evaluation Considerations</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#8-model-selection">8. Model Selection</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#9-training-limitations">9. Training Limitations</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#class-imbalance">Class Imbalance</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#missing-evaluation-classes">Missing Evaluation Classes</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#limited-dataset-diversity">Limited Dataset Diversity</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#limited-hyperparameter-exploration">Limited Hyperparameter Exploration</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#10-reproducibility">10. Reproducibility</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../evaluation/">Evaluation and Results</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../reproducibility/">Reproducibility</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Automated Pork Packaging Inspection</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Model Training</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="model-training-and-optimisation">Model Training and Optimisation</h1>
+<h2 id="1-overview">1. Overview</h2>
+<p>This project developed a YOLO11n object detector to identify
+five categories of pork packaging and visual meat defects.</p>
+<p>The training process consisted of two experiments:</p>
+<ol>
+<li>Initial training using pretrained YOLO11n weights.</li>
+<li>Extended training using the best checkpoint from the
+   initial experiment.</li>
+</ol>
+<p>The objective was to evaluate whether additional training
+improved detection performance.</p>
+<h2 id="2-training-environment">2. Training Environment</h2>
+<p>Model training was performed using Python and the
+Ultralytics YOLO framework.</p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Configuration</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Python</td>
+<td>3.11.9</td>
+</tr>
+<tr>
+<td>Model architecture</td>
+<td>YOLO11n</td>
+</tr>
+<tr>
+<td>Deep learning framework</td>
+<td>PyTorch</td>
+</tr>
+<tr>
+<td>Training library</td>
+<td>Ultralytics</td>
+</tr>
+<tr>
+<td>GPU</td>
+<td>NVIDIA RTX 4050 Laptop GPU</td>
+</tr>
+<tr>
+<td>GPU memory</td>
+<td>6 GB</td>
+</tr>
+<tr>
+<td>Acceleration</td>
+<td>CUDA</td>
+</tr>
+<tr>
+<td>Random seed</td>
+<td>42</td>
+</tr>
+</tbody>
+</table>
+<p>The GPU was used to accelerate training and inference.</p>
+<p>The recorded software versions and dependencies are
+documented in the project's requirements file.</p>
+<h2 id="3-training-dataset">3. Training Dataset</h2>
+<p>The model was trained using the processed dataset
+following duplicate-filename checks.</p>
+<table>
+<thead>
+<tr>
+<th>Split</th>
+<th style="text-align: right;">Images</th>
+<th style="text-align: right;">Annotations</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Training</td>
+<td style="text-align: right;">1,741</td>
+<td style="text-align: right;">2,201</td>
+</tr>
+<tr>
+<td>Validation</td>
+<td style="text-align: right;">114</td>
+<td style="text-align: right;">144</td>
+</tr>
+<tr>
+<td>Testing</td>
+<td style="text-align: right;">76</td>
+<td style="text-align: right;">93</td>
+</tr>
+</tbody>
+</table>
+<p>The training dataset was used for parameter optimisation.</p>
+<p>The validation dataset was used to assess performance
+during model development.</p>
+<p>The test dataset was reserved for final evaluation.</p>
+<p>All images and labels were organised in the directory:</p>
+<p><code>data/yolo/</code></p>
+<p>The dataset configuration was defined in:</p>
+<p><code>data/yolo/dataset.yaml</code></p>
+<h2 id="4-initial-yolo-training">4. Initial YOLO Training</h2>
+<h3 id="41-model-initialisation">4.1 Model Initialisation</h3>
+<p>The initial experiment used the pretrained checkpoint:</p>
+<p><code>yolo11n.pt</code></p>
+<p>Pretrained weights provided a starting point for
+fine-tuning the detector on the pork packaging dataset.</p>
+<h3 id="42-training-configuration">4.2 Training Configuration</h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Epochs</td>
+<td>20</td>
+</tr>
+<tr>
+<td>Image resolution</td>
+<td>640 × 640</td>
+</tr>
+<tr>
+<td>Batch size</td>
+<td>4</td>
+</tr>
+<tr>
+<td>GPU device</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Data-loader workers</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Random seed</td>
+<td>42</td>
+</tr>
+<tr>
+<td>Training run</td>
+<td>initial_training</td>
+</tr>
+</tbody>
+</table>
+<p>Training outputs, including model checkpoints and
+performance figures, were saved by Ultralytics.</p>
+<p>The best checkpoint was stored as <code>best.pt</code> within
+the experiment's weights directory.</p>
+<h3 id="43-initial-validation-results">4.3 Initial Validation Results</h3>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th style="text-align: right;">Initial YOLO</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Precision</td>
+<td style="text-align: right;">64.63%</td>
+</tr>
+<tr>
+<td>Recall</td>
+<td style="text-align: right;">55.59%</td>
+</tr>
+<tr>
+<td>mAP@0.5</td>
+<td style="text-align: right;">60.29%</td>
+</tr>
+<tr>
+<td>mAP@0.5:0.95</td>
+<td style="text-align: right;">29.14%</td>
+</tr>
+</tbody>
+</table>
+<p>The initial model demonstrated the ability to detect
+packaging-related defects.</p>
+<p>However, recall and bounding-box localisation accuracy
+indicated potential for further improvement.</p>
+<h2 id="5-extended-yolo-training">5. Extended YOLO Training</h2>
+<h3 id="51-training-approach">5.1 Training Approach</h3>
+<p>The extended experiment was initialised using the best
+checkpoint from the initial experiment.</p>
+<p>An additional 20 training epochs were performed using
+the same processed dataset.</p>
+<p>This continued optimisation from previously learned
+model parameters rather than starting again from
+the original pretrained checkpoint.</p>
+<h3 id="52-extended-training-configuration">5.2 Extended Training Configuration</h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Starting weights</td>
+<td>Initial best.pt</td>
+</tr>
+<tr>
+<td>Additional epochs</td>
+<td>20</td>
+</tr>
+<tr>
+<td>Image resolution</td>
+<td>640 × 640</td>
+</tr>
+<tr>
+<td>Batch size</td>
+<td>4</td>
+</tr>
+<tr>
+<td>GPU device</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Data-loader workers</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Random seed</td>
+<td>42</td>
+</tr>
+<tr>
+<td>Training run</td>
+<td>extended_training</td>
+</tr>
+</tbody>
+</table>
+<p>The best checkpoint from this experiment was selected
+as the final model for subsequent evaluation.</p>
+<h2 id="6-validation-performance-comparison">6. Validation Performance Comparison</h2>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th style="text-align: right;">Initial YOLO</th>
+<th style="text-align: right;">Extended YOLO</th>
+<th style="text-align: right;">Improvement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Precision</td>
+<td style="text-align: right;">64.63%</td>
+<td style="text-align: right;">84.40%</td>
+<td style="text-align: right;">+19.77 pp</td>
+</tr>
+<tr>
+<td>Recall</td>
+<td style="text-align: right;">55.59%</td>
+<td style="text-align: right;">59.74%</td>
+<td style="text-align: right;">+4.15 pp</td>
+</tr>
+<tr>
+<td>mAP@0.5</td>
+<td style="text-align: right;">60.29%</td>
+<td style="text-align: right;">72.13%</td>
+<td style="text-align: right;">+11.84 pp</td>
+</tr>
+<tr>
+<td>mAP@0.5:0.95</td>
+<td style="text-align: right;">29.14%</td>
+<td style="text-align: right;">34.00%</td>
+<td style="text-align: right;">+4.86 pp</td>
+</tr>
+</tbody>
+</table>
+<p><em>pp = percentage points.</em></p>
+<p>Extended training improved all four reported validation
+metrics.</p>
+<p>The largest improvement was observed in precision,
+which increased by 19.77 percentage points.</p>
+<p>The mAP@0.5 improvement indicates better detection
+performance across confidence thresholds.</p>
+<p>The improvement in mAP@0.5:0.95 was smaller, suggesting
+that accurate bounding-box localisation remained challenging.</p>
+<p>These results supported selecting the extended YOLO
+checkpoint for further evaluation.</p>
+<h2 id="7-confidence-threshold-sensitivity">7. Confidence-Threshold Sensitivity</h2>
+<p>The extended model was evaluated using several
+confidence thresholds.</p>
+<table>
+<thead>
+<tr>
+<th>Confidence</th>
+<th style="text-align: right;">Precision</th>
+<th style="text-align: right;">Recall</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0.10</td>
+<td style="text-align: right;">84.40%</td>
+<td style="text-align: right;">59.74%</td>
+</tr>
+<tr>
+<td>0.20</td>
+<td style="text-align: right;">84.40%</td>
+<td style="text-align: right;">59.74%</td>
+</tr>
+<tr>
+<td>0.30</td>
+<td style="text-align: right;">83.20%</td>
+<td style="text-align: right;">60.18%</td>
+</tr>
+<tr>
+<td>0.40</td>
+<td style="text-align: right;">93.47%</td>
+<td style="text-align: right;">51.46%</td>
+</tr>
+<tr>
+<td>0.50</td>
+<td style="text-align: right;">90.04%</td>
+<td style="text-align: right;">29.40%</td>
+</tr>
+<tr>
+<td>0.60</td>
+<td style="text-align: right;">74.29%</td>
+<td style="text-align: right;">16.48%</td>
+</tr>
+</tbody>
+</table>
+<h3 id="71-interpretation">7.1 Interpretation</h3>
+<p>The results demonstrate the effect of confidence
+threshold selection on detection performance.</p>
+<p>A threshold of 0.30 produced the highest observed
+recall among the tested values.</p>
+<p>A threshold of 0.40 produced the highest observed
+precision.</p>
+<p>Higher thresholds generally reduced the number of
+retained detections, although precision did not
+increase monotonically.</p>
+<h3 id="72-selected-operating-threshold">7.2 Selected Operating Threshold</h3>
+<p>A confidence threshold of 0.30 was selected for
+the custom comparison with the HOG + SVM baseline.</p>
+<p>This threshold provides a useful operating point for
+examining the balance between correctly detected
+defects and missed defects.</p>
+<p>The selected threshold does not necessarily represent
+an optimal industrial operating point.</p>
+<h3 id="73-evaluation-considerations">7.3 Evaluation Considerations</h3>
+<p>The confidence-threshold experiment used an NMS
+IoU threshold of 0.70.</p>
+<p>This is separate from the IoU thresholds used
+to calculate object-detection evaluation metrics.</p>
+<p>The mAP values produced under different confidence
+cutoffs should not be interpreted as directly
+comparable standard full-confidence-range AP values.</p>
+<h2 id="8-model-selection">8. Model Selection</h2>
+<p>The extended YOLO11n checkpoint was selected for
+final evaluation because it achieved better validation
+performance than the initial model.</p>
+<p>The final model was then evaluated on the held-out
+test dataset.</p>
+<p>The test results are reported separately in the
+Evaluation and Results documentation.</p>
+<p>This separation is important because validation
+performance may not accurately represent performance
+on previously unseen images.</p>
+<h2 id="9-training-limitations">9. Training Limitations</h2>
+<h3 id="class-imbalance">Class Imbalance</h3>
+<p>Some defect classes contain substantially fewer
+training examples than others.</p>
+<p>This can affect the model's ability to learn
+reliable features for underrepresented categories.</p>
+<h3 id="missing-evaluation-classes">Missing Evaluation Classes</h3>
+<p>The wrinkle category has no annotations in the
+validation or test datasets.</p>
+<p>Consequently, its detection performance cannot be
+reliably established from these evaluation splits.</p>
+<h3 id="limited-dataset-diversity">Limited Dataset Diversity</h3>
+<p>Images from similar capture conditions may share
+visual characteristics.</p>
+<p>The trained model may therefore perform less
+reliably on substantially different packaging,
+lighting or camera conditions.</p>
+<h3 id="limited-hyperparameter-exploration">Limited Hyperparameter Exploration</h3>
+<p>The project investigated additional training
+and confidence-threshold sensitivity.</p>
+<p>It did not perform an exhaustive search across
+architectures or training hyperparameters.</p>
+<h2 id="10-reproducibility">10. Reproducibility</h2>
+<p>The training and optimisation experiments are
+implemented in:</p>
+<p><code>notebooks/04_yolo_model.ipynb</code></p>
+<p>The notebook includes:</p>
+<ul>
+<li>YOLO dataset conversion and validation.</li>
+<li>Initial model training.</li>
+<li>Extended model training.</li>
+<li>Validation metric extraction.</li>
+<li>Confidence-threshold sensitivity analysis.</li>
+<li>Runtime and GPU memory benchmarking.</li>
+<li>Final model evaluation.</li>
+</ul>
+<p>Training checkpoints and large datasets may need to
+be obtained or regenerated separately if they are
+excluded from the GitHub repository.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../methodology/" class="btn btn-neutral float-left" title="Computational Methods"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../evaluation/" class="btn btn-neutral float-right" title="Evaluation and Results">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../methodology/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../evaluation/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
