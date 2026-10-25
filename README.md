@@ -181,7 +181,7 @@ MMA3001-Pork-Packaging-Inspection/
 └── .gitignore
 ```
 
-The `data/` and `models/` directories are excluded from version control.
+The original dataset and local model directories are excluded from version control. Selected trained YOLO checkpoints, experimental results and visualisations are retained in the repository to support reproducibility.
 
 ## 9. Running the Project
 
